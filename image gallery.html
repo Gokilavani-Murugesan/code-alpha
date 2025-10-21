@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beautiful Image Gallery</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #f8cdda, #1d2b64);
+      color: white;
+      text-align: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2em;
+      letter-spacing: 2px;
+    }
+
+    .filter-buttons {
+      margin-bottom: 25px;
+    }
+
+    .filter-btn {
+      background-color: #ffffff22;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 25px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background-color: #ff79c6;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.4s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.1);
+      filter: brightness(80%);
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .lightbox img {
+      width: 80%;
+      max-width: 800px;
+      border-radius: 10px;
+    }
+
+    .close {
+      position: absolute;
+      top: 30px;
+      right: 50px;
+      font-size: 40px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .close:hover {
+      color: #ff79c6;
+    }
+
+    .navigation button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      margin: 10px;
+    }
+
+    .navigation button:hover {
+      color: #ff79c6;
+    }
+
+    @media (max-width: 600px) {
+      .gallery {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+
+      .lightbox img {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌺 Beautiful Image Gallery</h1>
+
+  <div class="filter-buttons">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="nature">Nature</button>
+    <button class="filter-btn" data-filter="city">City</button>
+    <button class="filter-btn" data-filter="animals">Animals</button>
+  </div>
+
+  <div class="gallery">
+    <!-- Nature Images -->
+    <div class="gallery-item" data-category="nature">
+      <img src="https://picsum.photos/id/1018/400/300" alt="Nature 1">
+    </div>
+    <div class="gallery-item" data-category="nature">
+      <img src="https://picsum.photos/id/1015/400/300" alt="Nature 2">
+    </div>
+
+    <!-- City Images -->
+    <div class="gallery-item" data-category="city">
+      <img src="https://picsum.photos/id/1011/400/300" alt="City 1">
+    </div>
+    <div class="gallery-item" data-category="city">
+      <img src="https://picsum.photos/id/1016/400/300" alt="City 2">
+    </div>
+
+    <!-- Animal Images -->
+    <div class="gallery-item" data-category="animals">
+      <img src="https://picsum.photos/id/237/400/300" alt="Animals 1">
+    </div>
+    <div class="gallery-item" data-category="animals">
+      <img src="https://picsum.photos/id/1074/400/300" alt="Animals 2">
+    </div>
+  </div>
+
+  <div id="lightbox" class="lightbox">
+    <span class="close">&times;</span>
+    <img class="lightbox-img" src="" alt="">
+    <div class="navigation">
+      <button id="prev">&#10094;</button>
+      <button id="next">&#10095;</button>
+    </div>
+  </div>
+
+  <script>
+    const galleryItems = document.querySelectorAll(".gallery-item img");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.querySelector(".lightbox-img");
+    const closeBtn = document.querySelector(".close");
+    const nextBtn = document.getElementById("next");
+    const prevBtn = document.getElementById("prev");
+    let currentIndex = 0;
+
+    galleryItems.forEach((img, index) => {
+      img.addEventListener("click", () => {
+        lightbox.style.display = "flex";
+        lightboxImg.src = img.src;
+        currentIndex = index;
+      });
+    });
+
+    closeBtn.addEventListener("click", () => {
+      lightbox.style.display = "none";
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % galleryItems.length;
+      lightboxImg.src = galleryItems[currentIndex].src;
+    });
+
+    prevBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+      lightboxImg.src = galleryItems[currentIndex].src;
+    });
+
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) {
+        lightbox.style.display = "none";
+      }
+    });
+
+    const filterBtns = document.querySelectorAll(".filter-btn");
+
+    filterBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelector(".filter-btn.active").classList.remove("active");
+        btn.classList.add("active");
+
+        const filterValue = btn.getAttribute("data-filter");
+        document.querySelectorAll(".gallery-item").forEach((item) => {
+          if (filterValue === "all" || item.dataset.category === filterValue) {
+            item.style.display = "block";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
